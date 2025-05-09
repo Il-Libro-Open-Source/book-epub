@@ -1,0 +1,56 @@
+name: Build EPUB and Release
+
+on:
+  push: # Esegue l'action su ogni commit
+    branches:
+      - "**"
+    tags:
+      - "*" # Esegue l'action anche su qualsiasi tag
+  repository_dispatch: # <--- aggiungi questa riga
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo book-epub
+        uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "^1.24.2"
+
+      - name: Clone book repo
+        run: |
+          git clone https://github.com/Il-Libro-Open-Source/book.git /tmp/book
+
+      - name: Get latest tag from book repo
+        id: book_tag
+        run: |
+          cd /tmp/book
+          echo "tag=$(git describe --tags --abbrev=0)" >> $GITHUB_OUTPUT
+
+      - name: Build EPUB
+        env:
+          INPUT: /tmp/book
+          OUTPUT: ${{ github.workspace }}/il-manuale-del-buon-dev.epub
+          UUID: f9298b0f-bea1-4cb6-a601-2a35027bd44e
+        run: |
+          go build -o ./epub-generator ./src
+          ./epub-generator
+
+      - name: Upload EPUB as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: il-manuale-del-buon-dev
+          path: ${{ github.workspace }}/il-manuale-del-buon-dev.epub
+
+      - name: Create GitHub Release (only if tag is present)
+        if: github.event_name == 'repository_dispatch' && steps.book_tag.outputs.tag != ''
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.book_tag.outputs.tag }}
+          files: ${{ github.workspace }}/il-manuale-del-buon-dev.epub
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

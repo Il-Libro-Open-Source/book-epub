@@ -6,7 +6,32 @@ on:
       - "**"
     tags:
       - "*" # Esegue l'action anche su qualsiasi tag
-  repository_dispatch: # <--- aggiungi questa riga
+  repository_dispatch:
+  workflow_dispatch:
+    inputs:
+      do_release:
+        type: choice
+        description: "Esegui la release? (richiesto)"
+        required: true
+        options:
+          - "true"
+          - "false"
+        default: "false"
+      release_tag:
+        type: "string"
+        description: "Tag della release (opzionale, se vuoto usa quello del repo clonato)"
+        required: false
+        default: ""
+      release_name:
+        type: "string"
+        description: "Nome della release (richiesto)"
+        required: false
+        default: ""
+      release_notes:
+        type: "string"
+        description: "Note di rilascio (opzionale)"
+        required: false
+        default: ""
 
 jobs:
   build-and-release:
@@ -47,12 +72,14 @@ jobs:
           name: il-manuale-del-buon-dev
           path: ${{ github.workspace }}/il-manuale-del-buon-dev.epub
 
-      - name: Create GitHub Release (only if tag is present)
-        if: github.event_name == 'repository_dispatch' && steps.book_tag.outputs.tag != ''
+      - name: Create GitHub Release (solo se richiesto da workflow_dispatch)
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.do_release == 'true' && (github.event.inputs.release_tag != '' || steps.book_tag.outputs.tag != '')
         uses: ncipollo/release-action@v1
         with:
-          generateReleaseNotes: true
+          generateReleaseNotes: ${{ github.event.inputs.release_notes == '' }}
           makeLatest: true
-          tag: ${{ steps.book_tag.outputs.tag }}
+          name: ${{ github.event.inputs.release_name != '' && github.event.inputs.release_name || steps.book_tag.outputs.tag }}
+          tag: ${{ github.event.inputs.release_tag != '' && github.event.inputs.release_tag || steps.book_tag.outputs.tag }}
           artifacts: ${{ github.workspace }}/il-manuale-del-buon-dev.epub
           token: ${{ secrets.GITHUB_TOKEN }}
+          body: ${{ github.event.inputs.release_notes }}

@@ -1,5 +1,7 @@
 # book-epub
 
+Vuoi scaricare i file? Li trovi nella sezione **Assets** sotto l'ultima Release [qui](https://github.com/Il-Libro-Open-Source/book-epub/releases)!
+
 [![Build EPUB and Release](https://github.com/Il-Libro-Open-Source/book-epub/actions/workflows/build-and-release.yml/badge.svg)](https://github.com/Il-Libro-Open-Source/book-epub/actions/workflows/build-and-release.yml)
 [![Go Version](https://img.shields.io/github/go-mod/go-version/Il-Libro-Open-Source/book-epub)](go.mod)
 

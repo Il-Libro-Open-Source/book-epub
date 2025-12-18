@@ -107,6 +107,9 @@ jobs:
           makeLatest: true
           name: ${{ github.event.inputs.release_name != '' && github.event.inputs.release_name || steps.book_tag.outputs.tag }}
           tag: ${{ github.event.inputs.release_tag != '' && github.event.inputs.release_tag || steps.book_tag.outputs.tag }}
-          artifacts: ${{ github.workspace }}/il-manuale-del-buon-dev.epub
+          artifacts: |
+            ${{ github.workspace }}/il-manuale-del-buon-dev.epub
+            ${{ github.workspace }}/il-manuale-del-buon-dev.mobi
+            ${{ github.workspace }}/il-manuale-del-buon-dev.pdf
           token: ${{ secrets.GITHUB_TOKEN }}
           body: ${{ github.event.inputs.release_notes }}

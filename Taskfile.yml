@@ -1,0 +1,71 @@
+version: "3"
+
+vars:
+  BOOK_DIR: "/tmp/ilos-book"
+  UUID: "f9298b0f-bea1-4cb6-a601-2a35027bd44e"
+  OUTPUT_EPUB: "./il-manuale-del-buon-dev.epub"
+  OUTPUT_MOBI: "./il-manuale-del-buon-dev.mobi"
+  OUTPUT_PDF: "./il-manuale-del-buon-dev.pdf"
+  LOG_LEVEL: "INFO"
+  WORK_DIR:
+    sh: pwd
+
+tasks:
+  build:
+    desc: "Build the generator binary"
+    cmds:
+      - go build -o ./bin/epub-generator ./src
+
+  test:
+    desc: "Run unit tests"
+    cmds:
+      - go test -v ./...
+
+  clone-book:
+    desc: "Clone book repository"
+    cmds:
+      - rm -rf {{.BOOK_DIR}}
+      - git clone https://github.com/Il-Libro-Open-Source/book.git {{.BOOK_DIR}} || (cd {{.BOOK_DIR}} && git pull)
+
+  generate:
+    desc: "Generate EPUB"
+    deps: [build, clone-book]
+    cmds:
+      - INPUT={{.BOOK_DIR}} OUTPUT={{.OUTPUT_EPUB}} UUID={{.UUID}} LOG_LEVEL={{.LOG_LEVEL}} ./bin/epub-generator
+
+  generate-all:
+    desc: "Generate EPUB, MOBI and PDF"
+    deps: [generate]
+    cmds:
+      - echo "Conversione in MOBI..."
+      - ebook-convert {{.OUTPUT_EPUB}} {{.OUTPUT_MOBI}} --verbose
+      - echo "Conversione in PDF..."
+      - ebook-convert {{.OUTPUT_EPUB}} {{.OUTPUT_PDF}} --verbose --cover ./assets/cover-pdf.jpg --remove-first-image --pdf-default-font-size 14 --pdf-page-numbers
+      - echo "Conversioni completate!"
+
+  clean:
+    desc: "Clean artifacts"
+    cmds:
+      - rm -rf ./bin/*.exe ./bin/* ./il-manuale-del-buon-dev.* ./coverage.out coverage.html
+
+  fmt:
+    desc: "Format code"
+    cmds:
+      - gofmt -s -w ./src
+      - go vet ./src/...
+
+  lint:
+    desc: "Run golangci-lint if installed"
+    cmds:
+      - if command -v golangci-lint >/dev/null 2>&1; then golangci-lint run ./...; else echo "golangci-lint not installed"; fi
+
+  validate-epub:
+    desc: "Validate EPUB with epubcheck"
+    cmds:
+      - 'if [ -f {{.OUTPUT_EPUB}} ]; then if command -v epubcheck >/dev/null 2>&1; then epubcheck {{.OUTPUT_EPUB}}; else echo "epubcheck not installed"; fi; else echo "EPUB not found: {{.OUTPUT_EPUB}}"; fi'
+
+  dev:
+    desc: "Development task - clean, build, test"
+    deps: [clean, fmt, lint, test]
+    cmds:
+      - echo "Dev tasks complete"

@@ -1,81 +1,178 @@
+/* Permetti al sistema di decidere lo schema di colori (chiaro/scuro) */
+:root {
+  color-scheme: light dark;
+}
+
+/* Base styling - colori gestiti dal sistema */
 body {
-  font-family: Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
   line-height: 1.6;
-  margin: 0;
+  margin: 1em;
   padding: 0;
 }
-h1, h2, h3, h4, h5, h6 {
-  margin: 1em 0 0.5em;
+
+/* Headings con page break hints */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 1.5em 0 0.5em;
+  line-height: 1.3;
+  font-weight: 600;
+  page-break-after: avoid;
+  -webkit-column-break-after: avoid;
+  break-after: avoid;
 }
+
+h1 {
+  font-size: 2em;
+  page-break-before: always;
+  -webkit-column-break-before: always;
+  break-before: always;
+}
+
+h1:first-child {
+  page-break-before: avoid;
+  -webkit-column-break-before: avoid;
+  break-before: avoid;
+}
+
+h2 {
+  font-size: 1.5em;
+}
+h3 {
+  font-size: 1.25em;
+}
+h4 {
+  font-size: 1.1em;
+}
+h5 {
+  font-size: 1em;
+}
+h6 {
+  font-size: 0.9em;
+}
+
+/* Paragraphs con giustificazione e sillabazione */
 p {
   margin: 0 0 1em;
+  text-align: justify;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+  -moz-hyphens: auto;
+  -ms-hyphens: auto;
 }
+
+/* Links - colore gestito dal sistema */
 a {
-  color: #1e90ff;
-  text-decoration: none;
-}
-a:hover {
   text-decoration: underline;
+  word-wrap: break-word;
 }
-ul, ol {
+
+/* Lists */
+ul,
+ol {
   margin: 0 0 1em 1.5em;
   padding: 0;
 }
+
 li {
   margin: 0.5em 0;
 }
+
+/* Code blocks con font stack completo - sfondo gestito dal sistema */
 code {
-  font-family: "Courier New", Courier, monospace;
+  font-family: "Courier New", Courier, "Lucida Console", Monaco, monospace;
+  font-size: 0.9em;
   padding: 0.2em 0.4em;
+  border-radius: 3px;
+  border: 1px solid currentColor;
+  opacity: 0.8;
 }
+
 pre {
-  overflow-x: auto; 
+  border: 1px solid currentColor;
+  opacity: 0.8;
+  border-radius: 4px;
+  padding: 0.5em;
+  margin: 1em 0;
+  overflow-x: auto;
   word-wrap: break-word;
+  white-space: pre-wrap;
+  page-break-inside: avoid;
+  -webkit-column-break-inside: avoid;
+  break-inside: avoid;
 }
+
 pre code {
   display: block;
-  font-family: "Courier New", Courier, monospace;
-  padding: 0.5em 1em;
-  border-radius: 4px;
-  overflow-x: auto; /* Per gestire il contenuto che supera la larghezza */
+  background-color: transparent;
+  border: none;
+  padding: 0;
   line-height: 1.5;
-  font-size: 0.9em; /* Dimensione del testo leggermente ridotta */
-  border: 1px solid currentColor; /* Bordo per definire meglio il blocco */
+  font-size: 0.85em;
+  opacity: 1;
 }
+
+/* Syntax highlighting - colori gestiti dal sistema */
+.chroma .ln {
+  margin-right: 0.5em;
+  user-select: none;
+  opacity: 0.6;
+}
+
+/* Tables - bordi e sfondo gestiti dal sistema */
 table {
   width: 100%;
   border-collapse: collapse;
   margin: 1em 0;
+  font-size: 0.9em;
+  page-break-inside: avoid;
+  -webkit-column-break-inside: avoid;
+  break-inside: avoid;
 }
-th, td {
+
+th,
+td {
   border: 1px solid currentColor;
+  opacity: 0.8;
   padding: 0.5em;
   text-align: left;
+  vertical-align: top;
 }
+
 th {
   font-weight: bold;
 }
+
 tr:nth-child(even) {
-  
+  opacity: 0.95;
 }
-tr:hover {
-  
-}
+
+/* Blockquotes - colori gestiti dal sistema */
 blockquote {
   margin: 1em 0;
   padding: 0.5em 1em;
   border-left: 4px solid currentColor;
+  font-style: italic;
+  opacity: 0.9;
+  page-break-inside: avoid;
+  -webkit-column-break-inside: avoid;
+  break-inside: avoid;
 }
 
 blockquote p:last-child {
   margin-bottom: 0;
 }
 
+/* Superscript per note a piè di pagina */
 sup {
-  font-size: 0.8em;
+  font-size: 0.75em;
   vertical-align: super;
-  line-height: 1;
-  margin-left: 0.5em;
+  line-height: 0;
 }
 
 blockquote sup {
@@ -83,8 +180,27 @@ blockquote sup {
   margin-right: 0.5em;
 }
 
+/* Horizontal rules */
 hr {
   border: none;
   border-top: 1px solid currentColor;
+  opacity: 0.5;
   margin: 2em 0;
+}
+
+/* Images */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 1em auto;
+}
+
+/* Figure captions */
+figcaption {
+  font-size: 0.9em;
+  font-style: italic;
+  text-align: center;
+  margin-top: 0.5em;
+  opacity: 0.8;
 }

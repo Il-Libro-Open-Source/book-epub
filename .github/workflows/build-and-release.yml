@@ -41,6 +41,8 @@ jobs:
     steps:
       - name: Checkout repo book-epub
         uses: actions/checkout@v3
+        with:
+          ref: ${{ github.ref }}
 
       - name: Set up Go
         uses: actions/setup-go@v5
@@ -66,12 +68,37 @@ jobs:
           go build -o ./epub-generator ./src
           ./epub-generator
 
+      - name: Convert EPUB to MOBI
+        uses: jensvog/ebook-convert-action@v1
+        with:
+          in: ${{ github.workspace }}/il-manuale-del-buon-dev.epub
+          out: ${{ github.workspace }}/il-manuale-del-buon-dev.mobi
+          args: "--verbose"
+
+      - name: Convert EPUB to PDF
+        uses: jensvog/ebook-convert-action@v1
+        with:
+          in: ${{ github.workspace }}/il-manuale-del-buon-dev.epub
+          out: ${{ github.workspace }}/il-manuale-del-buon-dev.pdf
+          args: "--verbose --cover /github/workspace/assets/cover-pdf.jpg --remove-first-image --pdf-default-font-size 14 --pdf-page-numbers"
+
       - name: Upload EPUB as artifact
         uses: actions/upload-artifact@v4
         with:
           name: il-manuale-del-buon-dev
           path: ${{ github.workspace }}/il-manuale-del-buon-dev.epub
 
+      - name: Upload MOBI as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: il-manuale-del-buon-dev-mobi
+          path: ${{ github.workspace }}/il-manuale-del-buon-dev.mobi
+
+      - name: Upload PDF as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: il-manuale-del-buon-dev-pdf
+          path: ${{ github.workspace }}/il-manuale-del-buon-dev.pdf
       - name: Create GitHub Release (solo se richiesto da workflow_dispatch)
         if: github.event_name == 'workflow_dispatch' && github.event.inputs.do_release == 'true' && (github.event.inputs.release_tag != '' || steps.book_tag.outputs.tag != '')
         uses: ncipollo/release-action@v1
